@@ -15,7 +15,8 @@
     "http-errors": "~1.6.3",
     "morgan": "~1.9.1",
     "node-sass-middleware": "0.11.0",
-    "nunjucks": "^3.2.1"
+    "nunjucks": "^3.2.1",
+    "twit": "^2.2.11"
   },
   "engines": {
     "node": "12.16.x"
