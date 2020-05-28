@@ -9,7 +9,7 @@ var twit = new Twitter({
  
   
 exports.twitterSearch = function(req, res) {
-twit.get('search/tweets', { q: 'banana since:2011-07-11', count: 100 }) 
+twit.get('search/tweets', { q: '#servicedesign since:2020-05-28', count: 500 }) 
   .catch(function (err) {
     console.log('caught error', err.stack)
     res.end();
@@ -18,8 +18,6 @@ twit.get('search/tweets', { q: 'banana since:2011-07-11', count: 100 })
     // `result` is an Object with keys "data" and "resp".
     // See https://github.com/ttezel/twit#tgetpath-params-callback for details.
  
-    res.send(result.data);
+    res.send("Number of retrieved tweets: " + result.data.statuses.length.toString());
   })
-
-
 };
