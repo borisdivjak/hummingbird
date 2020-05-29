@@ -12,12 +12,28 @@ var nunjucks = require('nunjucks');
 
 var app = express();
 
+
+// DB setup
+
+//Import the mongoose module
+var mongoose = require('mongoose');
+var mongoDB = 'mongodb+srv://' 
+              + process.env.MONGO_USER
+              + ':'
+              + process.env.MONGO_PASS
+              + '@clusterbd1-07cdt.mongodb.net/test?retryWrites=true&w=majority';
+
+mongoose.connect(mongoDB, { useNewUrlParser: true });
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+
+// view engine setup
+
 nunjucks.configure('views', {
     autoescape: true,
     express: app
 });
 
-// view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'njk');
 
