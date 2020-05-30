@@ -5,8 +5,8 @@
   "author": "Boris Divjak",
   "license": "GPL v3",
   "scripts": {
-    "start": "node ./bin/www",
-    "twit-track": "node ./bin/twittracker"
+    "start": "node ./bin/www.js",
+    "twit-track": "node ./bin/twittracker.js"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
