@@ -3,10 +3,13 @@ var uniqueValidator = require('mongoose-unique-validator');
 
 var Schema = mongoose.Schema;
 
+// NOTE: we use Strings for twitter IDs, because they are too big to store as Numbers
+// Javascript can only handle 53 bit integers, and Twitter IDs are 64 bit
+
 var TwitterPostSchema = new Schema(
   {
     created_at:       { type: Date, required: true },
-    id:               { type: Number, unique: true, required: true }, 
+    id_str:           { type: String, unique: true, required: true }, 
     full_text:        { type: String, required: true },
     entities: {
       hashtags: [{
@@ -14,7 +17,7 @@ var TwitterPostSchema = new Schema(
       }],
       user_mentions: [{
         screen_name:  { type: String },
-        id:           { type: Number }
+        id_str:       { type: String }
       }]
     }
   }
