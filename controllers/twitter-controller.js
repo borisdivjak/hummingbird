@@ -26,9 +26,9 @@ exports.twitterSearch = function(req, res) {
     
     var post = new TwitterPost(result.data.statuses[0]);
     
-    console.log(result.data);
+    console.log(post);
 
-    res.send(result.data.statuses[0].full_text);
+    res.send(post.full_text);
 
     return post.save();
  
