@@ -7,7 +7,7 @@ var TwitterPostSchema = new Schema(
   {
     created_at:       { type: Date, required: true },
     id:               { type: Number, unique: true, required: true }, 
-    full_text:        { type: String, max: 280, required: true },
+    full_text:        { type: String, maxlength: 280, required: true },
     entities: {
       hashtags: [{
         text:         { type: String }
