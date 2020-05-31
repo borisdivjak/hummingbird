@@ -103,9 +103,10 @@ config.twitter_trackers.forEach(tracker => {
   }) 
   .then(function (result) {
     // save remaining tweets to database
-    console.log('NEW RECORDS CREATED FOR "' + tracker.name + '": ' + result.data.statuses.length);
     return TwitterPost[tracker.id].insertMany(result.data.statuses);
-    return result;
+  }).then(function (statuses) {
+    // log message with number of new statuses recorded
+    console.log('NEW RECORDS CREATED FOR "' + tracker.name + '": ' + statuses.length);
   });
     
   tracker_promises.push(tracker_promise);
