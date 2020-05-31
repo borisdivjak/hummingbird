@@ -6,7 +6,9 @@ var mongoDB = 'mongodb+srv://'
               + process.env.MONGO_USER
               + ':'
               + process.env.MONGO_PASS
-              + '@clusterbd1-07cdt.mongodb.net/test?retryWrites=true&w=majority';
+              + '@clusterbd1-07cdt.mongodb.net/'
+              + process.env.MONGO_DB
+              + '?retryWrites=true&w=majority';
 
 mongoose.connect(mongoDB, { useNewUrlParser: true });
 var db = mongoose.connection;
