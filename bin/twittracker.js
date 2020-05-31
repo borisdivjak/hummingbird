@@ -73,6 +73,16 @@ var tracker_promises = [];
 config.twitter_trackers.forEach(tracker => {
   var tracker_promise = TwitterPost[tracker.id].init()
   .then(function() {
+
+    // get id of the most recent (highest id) tweet in the db
+    return TwitterPost[tracker.id].find({}, {id_str: 1, _id:0}).sort({id_str:-1}).limit(1);
+  })
+  .then(function(post_with_highest_id) {
+
+    // set since_id to retrieve only tweets more recent than the ones in the DB
+    tracker.parameters.since_id = post_with_highest_id[0].id_str;
+
+    // get tweets - see the getTweets function above
     var twitter_call = getTweets(tracker.parameters);
   
     // after twitter call, check for exsiting tweets (IDs) – check if any duplicates are already saved in database
