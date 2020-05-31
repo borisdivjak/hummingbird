@@ -15,6 +15,13 @@ var hummmconfig = {
         q:            '"ruby on rails"', 
         geocode:      '"52.5 -1.5 200km"'
       }
+    },            
+    {
+      id:           'ubxd',
+      name:         'from ubxd',
+      parameters: {
+        q:            'from:ubxd', 
+      }
     }            
   ]
 }
