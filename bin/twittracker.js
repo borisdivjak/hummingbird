@@ -67,17 +67,17 @@ var getTweets = function( search_params, max_id ) {
 //  Main - call twitter then write to database
 //  repeat for each tracker defined in config.js
 //
+var tracker_promises = [];
 
-
+// retreive new tweets for each tracker
 config.twitter_trackers.forEach(tracker => {
-  TwitterPost.init()
+  var tracker_promise = TwitterPost[tracker.id].init()
   .then(function() {
-  
     var twitter_call = getTweets(tracker.parameters);
   
     // after twitter call, check for exsiting tweets (IDs) – check if any duplicates are already saved in database
     var check_existing = twitter_call.then( result => {
-      return TwitterPost.find({'id_str': { $in: result.data.statuses.map( status => status.id_str) }}, 'id_str');
+      return TwitterPost[tracker.id].find({'id_str': { $in: result.data.statuses.map( status => status.id_str) }}, 'id_str');
     });
   
     // after both calls (to twitter and to database), remove existing tweets from twitter results and return that
@@ -93,17 +93,19 @@ config.twitter_trackers.forEach(tracker => {
   }) 
   .then(function (result) {
     // save remaining tweets to database
-    console.log("NEW RECORDS CREATED: " + result.data.statuses.length);
-    return TwitterPost.insertMany(result.data.statuses);
+    console.log('NEW RECORDS CREATED FOR "' + tracker.name + '": ' + result.data.statuses.length);
+    return TwitterPost[tracker.id].insertMany(result.data.statuses);
     return result;
-  })
-  .then(function() {
-      mongoose.disconnect();
-  })
-  .catch(function (err) {
-    console.log(err.stack);
-    mongoose.disconnect();
   });
+    
+  tracker_promises.push(tracker_promise);
 });
 
-
+// catch errors across all trackers and close mongodb at the end of all calls
+Promise.all(tracker_promises).then(() => {
+    mongoose.disconnect();
+})
+.catch(function (err) {
+  console.log(err.stack);
+  mongoose.disconnect();
+});

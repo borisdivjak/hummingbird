@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var uniqueValidator = require('mongoose-unique-validator');
+var config = require('../config.js')
 
 var Schema = mongoose.Schema;
 
@@ -27,4 +28,10 @@ TwitterPostSchema.plugin(uniqueValidator);
 
 
 //Export model
-module.exports = mongoose.model('TwitterPost', TwitterPostSchema);
+var exports = {};
+
+config.twitter_trackers.forEach(tracker => {
+  exports[tracker.id] = mongoose.model('TwitterPost_' + tracker.id, TwitterPostSchema, 'twitterposts_' + tracker.id);
+});
+
+module.exports = exports;
