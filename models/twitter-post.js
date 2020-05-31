@@ -20,6 +20,17 @@ var TwitterPostSchema = new Schema(
         screen_name:  { type: String },
         id_str:       { type: String }
       }]
+    },
+    user: {
+      screen_name:  { type: String },
+      id_str:       { type: String }
+    },
+    in_reply_to_status_id_str:  { type: String },
+    in_reply_to_user_id_str:    { type: String },
+    in_reply_to_screen_name:    { type: String },
+    quoted_status_id_str:       { type: String },
+    retweeted_status: {
+      id_str:       { type: String }
     }
   }
 );
