@@ -9,7 +9,7 @@ var Schema = mongoose.Schema;
 
 var TwitterPostSchema = new Schema(
   {
-    created_at:       { type: Date, required: true },
+    created_at:       { type: Date, required: true, index: true },
     id_str:           { type: String, unique: true, required: true }, 
     full_text:        { type: String, required: true },
     entities: {
