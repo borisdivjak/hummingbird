@@ -2,5 +2,11 @@
 
 {% block body %}
 <h1>{{ title }}</h1>
-<p>Welcome to NJK! {{ title }}</p>
+
+{% for tracker in trackers %}
+<p>
+  <a href="tracker/{{ tracker.id }}">{{ tracker.name }}</a>
+</p>
+{% endfor %}
+
 {% endblock %}

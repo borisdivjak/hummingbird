@@ -1,12 +1,9 @@
 var express = require('express');
+var indexController = require('./controllers/index-controller.js');
 var twitterController = require('./controllers/twitter-controller.js');
 var router = express.Router();
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
-
+router.get('/', indexController.index);
 router.get('/twit', twitterController.twitterSearch);
 
 
