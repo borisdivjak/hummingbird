@@ -4,7 +4,7 @@ var twitterController = require('./controllers/twitter-controller.js');
 var router = express.Router();
 
 router.get('/', indexController.index);
-router.get('/twit', twitterController.twitterSearch);
+router.get('/tracker/:trackerId', twitterController.twitterTrackerInfo);
 
 
 module.exports = router;
