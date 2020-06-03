@@ -35,6 +35,14 @@ var TwitterPostSchema = new Schema(
   }
 );
 
+TwitterPostSchema.statics.getTopPosters = function() {
+  return this.aggregate([
+    { $group: { _id: '$user.id_str', screen_name: { $first: '$user.screen_name' },  count: { $sum: 1 }}},
+    { $sort : { count : -1 } },
+    { $limit: 10 }
+  ]);
+}
+
 TwitterPostSchema.plugin(uniqueValidator);
 
 
