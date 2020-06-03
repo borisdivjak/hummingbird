@@ -28,4 +28,28 @@
 {% endfor %}
 </table>
 
+<br />
+
+<h3>Top 10 user mentions</h3>
+  
+<table>
+{% for user in top_mentions %}
+  <tr>
+    <td>{{ user.count }}</td><td>{{ user.screen_name }}</td>
+  </tr>
+{% endfor %}
+</table>
+
+<br />
+
+<h3>Top 10 retweeted users</h3>
+  
+<table>
+{% for user in top_retweeted %}
+  <tr>
+    <td>{{ user.count }}</td><td>{{ user.screen_name }}</td>
+  </tr>
+{% endfor %}
+</table>
+
 {% endblock %}

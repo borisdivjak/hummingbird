@@ -68,6 +68,37 @@ TwitterPostSchema.statics.getTopHashtags = function() {
   ]);
 }
 
+TwitterPostSchema.statics.getTopMentions = function() {
+  return this.aggregate([
+    { $unwind: '$entities.user_mentions' },
+    { $group: { _id: '$entities.user_mentions.id_str', screen_name: { $first: '$entities.user_mentions.screen_name' },  count: { $sum: 1 }}},
+    { $sort : { count : -1 } },
+    { $limit: 10 }
+  ]);
+}
+
+TwitterPostSchema.statics.getTopRetweeted = function() {
+  return this.aggregate([
+    { $facet: {
+        'retweeted': [
+          { $match: { 'retweeted_status.user.id_str': { $exists: true }}},
+          { $replaceRoot: { newRoot: '$retweeted_status.user' }}
+        ],
+        'quoted': [
+          { $match: { 'quoted_status.user.id_str': { $exists: true }}},
+          { $replaceRoot: { newRoot: '$quoted_status.user' }}
+        ]
+      }
+    },
+    { $project: { user: { $concatArrays: [ '$retweeted', '$quoted' ] }}},
+    { $unwind: '$user' },
+    { $group: { _id: '$user.id_str', screen_name: { $first: '$user.screen_name' },  count: { $sum: 1 }}},
+    { $sort : { count : -1 } },
+    { $limit: 10 }
+  ]);
+}
+
+
 TwitterPostSchema.plugin(uniqueValidator);
 
 

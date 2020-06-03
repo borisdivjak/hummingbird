@@ -9,14 +9,18 @@ exports.twitterTrackerInfo = async function(req, res) {
   try {
     var top_posters   = await TwitterPost[tracker.id].getTopPosters();
     var top_hashtags  = await TwitterPost[tracker.id].getTopHashtags();
+    var top_mentions  = await TwitterPost[tracker.id].getTopMentions();
+    var top_retweeted = await TwitterPost[tracker.id].getTopRetweeted();
     
-    console.log(top_hashtags);
+    console.log(top_retweeted);
   
     res.render('tracker-info', { 
-        title:        tracker.name, 
-        tracker:      tracker,
-        top_posters:  top_posters,
-        top_hashtags: top_hashtags
+        title:         tracker.name, 
+        tracker:       tracker,
+        top_posters:   top_posters,
+        top_hashtags:  top_hashtags,
+        top_mentions:  top_mentions,
+        top_retweeted: top_retweeted
     });
   }
   catch(err) {
