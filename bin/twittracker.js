@@ -27,7 +27,7 @@ var count_per_call = 100; // 100 is the maximum for the standard API
 //  function getTweets - make recursive calls to Twitter to get all relevant results (100 per call)
 //
 
-var getTweets = function( search_params, max_id ) {
+var getTweets = (search_params, max_id) => {
   if (typeof search_params !== 'object') {
     return Promise.reject(new Error('getTweets requires search parameters for a twitter query'));
   }
@@ -78,12 +78,13 @@ config.twitter_trackers.forEach(tracker => {
   var user_ids = [];
   
   var tracker_promise = TwitterPost[tracker.id].init()
-  .then(function() {
+  .then( () => TwitterUser.init() )
+  .then( () => {
 
     // get id of the most recent (highest id) tweet in the db
     return TwitterPost[tracker.id].find({}, {id_str: 1, _id:0}).sort({id_str:-1}).limit(1);
   })
-  .then(function(post_with_highest_id) {
+  .then( post_with_highest_id => {
   
     // set since_id to retrieve only tweets more recent than the ones in the DB
     if (post_with_highest_id.length > 0) tracker.parameters.since_id = post_with_highest_id[0].id_str;
@@ -97,7 +98,7 @@ config.twitter_trackers.forEach(tracker => {
     });
   
     // after both calls (to twitter and to database), remove existing tweets from twitter results and return that
-    return Promise.all([twitter_call, check_existing]).then(function([result, existing_posts]) {
+    return Promise.all([twitter_call, check_existing]).then( ([result, existing_posts]) => {
       var existing_ids = existing_posts.map(post => post.id_str);
   
       // filter out tweets with ids that exist in database
@@ -107,7 +108,7 @@ config.twitter_trackers.forEach(tracker => {
     });
     
   }) 
-  .then(function (result) {
+  .then( result => {
 
     // create array of users that are authors of new messages
     users = result.data.statuses.map( status => status.user);
@@ -119,7 +120,7 @@ config.twitter_trackers.forEach(tracker => {
     // save remaining tweets to database
     return TwitterPost[tracker.id].insertMany(result.data.statuses);
   })
-  .then(function (statuses) {
+  .then( statuses => {
 
     // log message with number of new statuses (twitter posts) recorded in the database
     console.log('NEW RECORDS CREATED FOR "' + tracker.name + '": ' + statuses.length);
@@ -127,7 +128,7 @@ config.twitter_trackers.forEach(tracker => {
     // 
     return TwitterUser.find({'id_str': { $in: user_ids }}, 'id_str');
   })
-  .then(function (existing_users) {
+  .then( existing_users => {
     var existing_ids = existing_users.map(user => user.id_str);
 
     // filter out users with ids that exist in database
@@ -136,7 +137,7 @@ config.twitter_trackers.forEach(tracker => {
     // save remaining users to database
     return TwitterUser.insertMany(new_users);
   })
-  .then(function (added_users) {
+  .then( added_users => {
     console.log('NEW USERS CREATED: ' + added_users.length);
   });
     
@@ -147,7 +148,7 @@ config.twitter_trackers.forEach(tracker => {
 Promise.all(tracker_promises).then(() => {
     mongoose.disconnect();
 })
-.catch(function (err) {
+.catch( err => {
   console.log(err.stack);
   mongoose.disconnect();
 });
