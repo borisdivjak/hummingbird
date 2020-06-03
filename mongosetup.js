@@ -10,6 +10,6 @@ var mongoDB = 'mongodb+srv://'
               + process.env.MONGO_DB
               + '?retryWrites=true&w=majority';
 
-mongoose.connect(mongoDB, { useNewUrlParser: true });
+mongoose.connect(mongoDB, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true });
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
