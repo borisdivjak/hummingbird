@@ -7,12 +7,16 @@ exports.twitterTrackerInfo = async function(req, res) {
   var tracker = config.twitter_trackers.filter( tracker => tracker.id == req.params['trackerId'] )[0];
 
   try {
-    var top_posters = await TwitterPost[tracker.id].getTopPosters();
+    var top_posters   = await TwitterPost[tracker.id].getTopPosters();
+    var top_hashtags  = await TwitterPost[tracker.id].getTopHashtags();
+    
+    console.log(top_hashtags);
   
     res.render('tracker-info', { 
         title:        tracker.name, 
         tracker:      tracker,
-        top_posters:  top_posters
+        top_posters:  top_posters,
+        top_hashtags: top_hashtags
     });
   }
   catch(err) {

@@ -43,6 +43,15 @@ TwitterPostSchema.statics.getTopPosters = function() {
   ]);
 }
 
+TwitterPostSchema.statics.getTopHashtags = function() {
+  return this.aggregate([
+    { $unwind: '$entities.hashtags' },
+    { $group: { _id: { $toLower: '$entities.hashtags.text' }, text: { $first: '$entities.hashtags.text' },  count: { $sum: 1 }}},
+    { $sort : { count : -1 } },
+    { $limit: 10 }
+  ]);
+}
+
 TwitterPostSchema.plugin(uniqueValidator);
 
 

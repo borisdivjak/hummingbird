@@ -4,11 +4,27 @@
 <a href="/">Home</a>
 <h1>{{ title }}</h1>
 
+<br />
+
+<h3>Top 10 posters</h3>
+
 <table>
 {% for user in top_posters %}
-<tr>
-  <td>{{ user.count }}</td><td>{{ user.screen_name }}</td>
-</tr>
+  <tr>
+    <td>{{ user.count }}</td><td>{{ user.screen_name }}</td>
+  </tr>
+{% endfor %}
+</table>
+  
+<br />
+
+<h3>Top 10 hashtags</h3>
+  
+<table>
+{% for hashtag in top_hashtags %}
+  <tr>
+    <td>{{ hashtag.count }}</td><td>{{ hashtag.text }}</td>
+  </tr>
 {% endfor %}
 </table>
 
