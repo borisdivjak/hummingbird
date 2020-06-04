@@ -103,7 +103,7 @@ TwitterPostSchema.statics.getUserConnections = function() {
   return this.aggregate([
     
     // create list of screen names to pair against
-    { $project: { id_str: '$id_str', user_screen_name: { $setUnion: [ '$entities.user_mentions.screen_name', ['$retweeted_status.user.screen_name' ], ['$quoted_status.user.screen_name' ]] }}},
+    { $project: { id_str: '$id_str', user_screen_name: { $setUnion: [ '$entities.user_mentions.screen_name', ['$user.screen_name' ], ['$retweeted_status.user.screen_name' ], ['$quoted_status.user.screen_name' ]] }}},
     { $unwind: '$user_screen_name' },
     { $match: { $expr: { $ne: [ '$user_screen_name', null ] }}},
 
@@ -113,7 +113,7 @@ TwitterPostSchema.statics.getUserConnections = function() {
         let : { start_id: '$id_str'},
         pipeline: [
           { $match: { $expr: { $eq: [ '$id_str', '$$start_id' ] }}},
-          { $project: { id_str: '$id_str', user_screen_name: { $setUnion: [ '$entities.user_mentions.screen_name', ['$retweeted_status.user.screen_name' ], ['$quoted_status.user.screen_name' ]] }}},
+          { $project: { id_str: '$id_str', user_screen_name: { $setUnion: [ '$entities.user_mentions.screen_name', ['$user.screen_name' ], ['$retweeted_status.user.screen_name' ], ['$quoted_status.user.screen_name' ]] }}},
           { $unwind: '$user_screen_name' }
         ],
         as : "linked_to"
