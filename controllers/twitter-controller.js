@@ -1,5 +1,6 @@
 var config = require('../config.js');
 var TwitterPost = require('../models/twitter-post.js');
+var TwitterUser = require('../models/twitter-user.js');
 
 
 exports.twitterTrackerInfo = async function(req, res) {
@@ -51,15 +52,26 @@ exports.twitterTrackerConnectionsJSON = async function(req, res) {
   var tracker = config.twitter_trackers.filter( tracker => tracker.id == req.params['trackerId'] )[0];
 
   try {
-    var connections   = await TwitterPost[tracker.id].getUserConnections();
-    var elements_1 = connections.map( connection => connection.screen_name_1 );
-    var elements_2 = connections.map( connection => connection.screen_name_2 );
-    var elements = [...new Set(elements_1, elements_2)];
+    // get connections from posts
+    var connections    = await TwitterPost[tracker.id].getUserConnections();
+
+    // get rich user objects based on screen names from connections
+    var screen_names_1 = connections.map( connection => connection.screen_name_1 );
+    var screen_names_2 = connections.map( connection => connection.screen_name_2 );
+    var screen_names   = [...new Set(screen_names_1, screen_names_2)];
+
+    var users = await TwitterUser.getUsersByScreenName(screen_names);
+    console.log(users);
 
     var response = {
-      elements: elements.map( element => {
+      elements: users.map( user => {
         return { 
-          label: element 
+          id:           user.screen_name, 
+          label:        user.name, 
+          description:  user.description,
+          followers_count: user.followers_count, 
+          image:        user.profile_image_url,
+          'twitter profile': user.screen_name
         }
       }),
       connections: connections.map( connection => {

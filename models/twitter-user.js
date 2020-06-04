@@ -28,6 +28,10 @@ var TwitterUserSchema = new Schema(
   }
 );
 
+TwitterUserSchema.statics.getUsersByScreenName = function( screen_name ) {
+  return this.find({'screen_name': { $in: screen_name }});
+}
+
 TwitterUserSchema.plugin(uniqueValidator);
 
 
