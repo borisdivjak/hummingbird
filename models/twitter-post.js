@@ -132,7 +132,7 @@ TwitterPostSchema.statics.getUserConnections = function() {
       count: { $sum: 1 }
     }},
     { $sort : { count : -1 } },
-    { $limit: 1000 }
+    { $limit: 10000 }
   ]);
 }
 
