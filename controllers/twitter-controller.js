@@ -76,6 +76,8 @@ exports.twitterTrackerConnectionsJSON = async function(req, res) {
     console.log( 'Connections: ' + response.connections.length );
 
     res .header("Content-Type",'application/json')
+        .header("Access-Control-Allow-Origin", "*")
+        .header("Access-Control-Allow-Headers", "X-Requested-With")
         .send(JSON.stringify(response, null, 4));
   }
   catch(err) {
