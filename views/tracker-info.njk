@@ -30,22 +30,12 @@
 
 <br />
 
-<h3>Top 10 user mentions</h3>
-  
-<table>
-{% for user in top_mentions %}
-  <tr>
-    <td>{{ user.count }}</td><td>{{ user.screen_name }}</td>
-  </tr>
-{% endfor %}
-</table>
-
 <br />
 
-<h3>Top 10 retweeted users</h3>
+<h3>Top 10 retweeted or mentioned users</h3>
   
 <table>
-{% for user in top_retweeted %}
+{% for user in top_rm %}
   <tr>
     <td>{{ user.count }}</td><td>{{ user.screen_name }}</td>
   </tr>
