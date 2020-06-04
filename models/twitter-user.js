@@ -23,7 +23,8 @@ var TwitterUserSchema = new Schema(
           display_url:   { type: String }
         }]
       }
-    }
+    },
+    profile_image_url:  { type: String }
   }
 );
 
