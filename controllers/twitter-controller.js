@@ -24,3 +24,20 @@ exports.twitterTrackerInfo = async function(req, res) {
     res.end();
   }
 };
+
+
+exports.twitterTrackerConnections = async function(req, res) {
+  var tracker = config.twitter_trackers.filter( tracker => tracker.id == req.params['trackerId'] )[0];
+
+  try {
+    res.render('tracker-connections', { 
+        title:         tracker.name, 
+        tracker:       tracker
+    });
+  }
+  catch(err) {
+    console.log(err);
+    res.end();
+  }
+
+};
