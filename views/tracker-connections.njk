@@ -4,5 +4,18 @@
 <a href="/">Home</a>
 <h1>{{ title }}</h1>
 
+<br />
+
+<h3>Connections between users (e.g. mentioned together, reposted, etc)</h3>
+
+<table>
+{% for connection in connections %}
+  <tr>
+    <td>{{ connection.count }}</td><td>{{ connection.screen_name_1 }}</td><td>{{ connection.screen_name_2 }}</td>
+  </tr>
+{% endfor %}
+</table>
+
+
 
 {% endblock %}

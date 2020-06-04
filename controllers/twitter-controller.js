@@ -30,9 +30,12 @@ exports.twitterTrackerConnections = async function(req, res) {
   var tracker = config.twitter_trackers.filter( tracker => tracker.id == req.params['trackerId'] )[0];
 
   try {
+    var connections   = await TwitterPost[tracker.id].getUserConnections();
+
     res.render('tracker-connections', { 
         title:         tracker.name, 
-        tracker:       tracker
+        tracker:       tracker,
+        connections:   connections
     });
   }
   catch(err) {
