@@ -27,7 +27,7 @@ var count_per_call = 100; // 100 is the maximum for the standard API
 //  function getTweets - make recursive calls to Twitter to get all relevant results (100 per call)
 //
 
-var getTweets = (search_params, max_id) => {
+var getTweets = async (search_params, max_id) => {
   if (typeof search_params !== 'object') {
     return Promise.reject(new Error('getTweets requires search parameters for a twitter query'));
   }
@@ -63,92 +63,83 @@ var getTweets = (search_params, max_id) => {
 }
 
 
-
 //
-//  Main - call twitter then write to database
-//  repeat for each tracker defined in config.js
-//  it's a bit convoluted as we're checking both for new posts and for new users
+//  function processTracker - retreive new tweets and users for each tracker
 //
-var tracker_promises = [];
 
-
-// retreive new tweets for each tracker
-config.twitter_trackers.forEach(tracker => {
+var processTracker = async (tracker) => {
   var users = []; // we'll need this to store users temporarily (to simplify promise logic)
   var user_ids = [];
   
-  var tracker_promise = TwitterPost[tracker.id].init()
-  .then( () => TwitterUser.init() )
-  .then( () => {
-
-    // get id of the most recent (highest id) tweet in the db
-    return TwitterPost[tracker.id].find({}, {id_str: 1, _id:0}).sort({id_str:-1}).limit(1);
-  })
-  .then( post_with_highest_id => {
   
+  try {
+    
+    await TwitterPost[tracker.id].init();
+    await TwitterUser.init();
+  
+    // get id of the most recent (highest id) tweet in the db
+    var post_with_highest_id = await TwitterPost[tracker.id].find({}, {id_str: 1, _id:0}).sort({id_str:-1}).limit(1);
+    
     // set since_id to retrieve only tweets more recent than the ones in the DB
     if (post_with_highest_id.length > 0) tracker.parameters.since_id = post_with_highest_id[0].id_str;
-
-    // get tweets - see the getTweets function above
-    var twitter_call = getTweets(tracker.parameters);
   
-    // after twitter call, check for exsiting tweets (IDs) – check if any duplicates are already saved in database
-    var check_existing = twitter_call.then( result => {
-      return TwitterPost[tracker.id].find({'id_str': { $in: result.data.statuses.map( status => status.id_str) }}, 'id_str');
-    });
+ 
+  
+    // GET NEW TWEETS AND SAVE THEM
+      
+    // get tweets - see the getTweets function above
+    var result = await getTweets(tracker.parameters);
+  
+    // after twitter call, check for exsiting tweets (IDs) – check if any duplicates are already saved in database  
+    var existing_posts = await TwitterPost[tracker.id].find({'id_str': { $in: result.data.statuses.map( status => status.id_str) }}, 'id_str');
   
     // after both calls (to twitter and to database), remove existing tweets from twitter results and return that
-    return Promise.all([twitter_call, check_existing]).then( ([result, existing_posts]) => {
-      var existing_ids = existing_posts.map(post => post.id_str);
+    var existing_ids = existing_posts.map(post => post.id_str);
   
-      // filter out tweets with ids that exist in database
-      result.data.statuses = result.data.statuses.filter( status => !existing_ids.includes(status.id_str) );
+    // filter out tweets with ids that exist in database
+    result.data.statuses = result.data.statuses.filter( status => !existing_ids.includes(status.id_str) );
   
-      return result;
-    });
-    
-  }) 
-  .then( result => {
+    // save remaining tweets to database
+    var saved_tweets = await TwitterPost[tracker.id].insertMany(result.data.statuses);
+    console.log('NEW RECORDS CREATED FOR "' + tracker.name + '": ' + saved_tweets.length);
+  
 
+
+    // EXTRACT AND SAVE NEW USERS
+   
     // create array of users that are authors of new messages
     users = result.data.statuses.map( status => status.user);
     
     // remove duplicates from users array (check where user_ids appear repeatedly in array)
     user_ids = users.map( user => user.id_str);
     users = users.filter((user, index) => user_ids.indexOf(user.id_str) === index);
-    
-    // save remaining tweets to database
-    return TwitterPost[tracker.id].insertMany(result.data.statuses);
-  })
-  .then( statuses => {
-
-    // log message with number of new statuses (twitter posts) recorded in the database
-    console.log('NEW RECORDS CREATED FOR "' + tracker.name + '": ' + statuses.length);
-    
-    // 
-    return TwitterUser.find({'id_str': { $in: user_ids }}, 'id_str');
-  })
-  .then( existing_users => {
+  
+    // get list of users that are already in database
+    var existing_users = await TwitterUser.find({'id_str': { $in: user_ids }}, 'id_str');  
     var existing_ids = existing_users.map(user => user.id_str);
-
+  
     // filter out users with ids that exist in database
     var new_users = users.filter( user => !existing_ids.includes(user.id_str) );
-
+  
     // save remaining users to database
-    return TwitterUser.insertMany(new_users);
-  })
-  .then( added_users => {
-    console.log('NEW USERS CREATED: ' + added_users.length);
-  });
-    
-  tracker_promises.push(tracker_promise);
-});
+    var saved_users = await TwitterUser.insertMany(new_users);
+    console.log('NEW USERS CREATED: ' + saved_users.length);
 
-// catch errors across all trackers and close mongodb at the end of all calls
-Promise.all(tracker_promises).then(() => {
-    mongoose.disconnect();
-})
-.catch( err => {
-  console.log(err.stack);
-  mongoose.disconnect();
-});
+  }
+  catch(err) {
+    console.log(err.stack);
+  }
+}
+
+
+
+//  MAIN - call twitter then write to database – repeat for each tracker defined in config.js
+
+var tracker_promises = [];
+
+config.twitter_trackers.forEach( tracker => {
+  tracker_promises.push(processTracker(tracker));
+}); 
+
+// close mongodb at the end of all calls
+Promise.all(tracker_promises).then(() => { mongoose.disconnect(); });
