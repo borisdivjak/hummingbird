@@ -6,7 +6,7 @@ var db = require('../mongosetup.js');
 var TwitterPost = require('../models/twitter-post.js');
 var TwitterUser = require('../models/twitter-user.js');
 var Twitter = require('../util/twitter-calls');
-var config = require('../config.js')
+var config = require('../config.js');
 
 
 
