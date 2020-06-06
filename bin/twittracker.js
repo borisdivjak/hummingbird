@@ -2,8 +2,7 @@
 
 // DB setup
 
-var mongoose = require('mongoose');
-require('../mongosetup.js');
+var db = require('../mongosetup.js');
 var TwitterPost = require('../models/twitter-post.js');
 var TwitterUser = require('../models/twitter-user.js');
 var Twitter = require('twit');
@@ -164,4 +163,4 @@ config.twitter_trackers.forEach( tracker => {
 }); 
 
 // close mongodb at the end of all calls
-Promise.all(tracker_promises).then(() => { mongoose.disconnect(); });
+Promise.all(tracker_promises).then(() => { db.close(); });

@@ -11,5 +11,9 @@ var mongoDB = 'mongodb+srv://'
               + '?retryWrites=true&w=majority';
 
 mongoose.connect(mongoDB, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true });
+
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+db.on('disconnected', function(){ console.log("MongoDB connection closed")});
+
+module.exports = db;
