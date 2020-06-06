@@ -32,7 +32,7 @@ Promise.all(config.twitter_trackers.map( async tracker => {
 
   // get hydrated user objects from Twitter
   var tw_users = await Twitter.getUsers(combined_screen_names);
-
+  console.log('Users received from twitter: ', tw_users.length);
 
   // UPDATE EXISTING USERS
 
