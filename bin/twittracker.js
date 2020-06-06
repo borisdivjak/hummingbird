@@ -115,7 +115,7 @@ var processTracker = async (tracker) => {
     users = users.filter((user, index) => user_ids.indexOf(user.id_str) === index);
   
     // get list of users that are already in database
-    var existing_users = await TwitterUser.find({'id_str': { $in: user_ids }}, 'id_str');  
+    var existing_users = await TwitterUser.find({'id_str': { $in: user_ids }});  
     var existing_ids = existing_users.map(user => user.id_str);
   
     // filter out users with ids that exist in database
@@ -124,7 +124,29 @@ var processTracker = async (tracker) => {
     // save remaining users to database
     var saved_users = await TwitterUser.insertMany(new_users);
     console.log('NEW USERS CREATED: ' + saved_users.length);
+    
+    
+    // UPDATE EXISTING USERS
+    
+    // for each existing user run a seuqence of steps
+    await Promise.all(existing_users.map( async existing_user => {
 
+      // find the new data for the user from the twitter responses
+      var new_data = users.find( user => user.id_str === existing_user.id_str );
+
+      // if the twitter data has an update (new data is different to existing)
+      // update the user (set) and save changes to database
+      if ( !existing_user.equalsUserData( new_data )) {
+        try {
+          existing_user.set(new_data);
+          await existing_user.save({validateModifiedOnly: true});
+          console.log( 'Updated user: ', existing_user.screen_name );
+        }
+        catch(err) {
+          console.log(err);
+        }
+      }
+    }));
   }
   catch(err) {
     console.log(err.stack);
