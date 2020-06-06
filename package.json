@@ -6,7 +6,8 @@
   "license": "GPL v3",
   "scripts": {
     "start": "node ./bin/www.js",
-    "twit-track": "node ./bin/twittracker.js"
+    "twit-track": "node ./bin/twittracker.js",
+    "twit-update-users": "node ./bin/twitupdateusers.js"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",

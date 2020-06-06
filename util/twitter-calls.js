@@ -22,7 +22,7 @@ var count_per_call = 100; // 100 is the maximum for the standard API
 
 var getTweets = async (search_params, max_id) => {
   if (typeof search_params !== 'object') {
-    return Promise.reject(new Error('getTweets requires search parameters for a twitter query'));
+    return Promise.reject(new Error('getTweets requires search parameters object for a twitter query'));
   }
 
   search_params.count       = count_per_call;
@@ -58,6 +58,42 @@ var getTweets = async (search_params, max_id) => {
 }
 
 
+var getUsers = async (screen_names) => {
+  if (screen_names === undefined || screen_names === null) {
+    throw new Error('function getUsers requires a list of users, either as array or as a comma separated string.');
+  }
+  if (typeof screen_names === 'string') {
+    // turn string into array
+    screen_names = screen_names.replace(/\s/g,'').split(',');
+  }
+
+  // create chunks of 100 names (max 100 per twitter call)
+  var chuncks_of_names = [];
+  for ( i=0; i<screen_names.length; i+=100 ) {
+    chuncks_of_names.push( screen_names.slice(i,i+100) );
+  }
+
+  var twitter_users = [];
+
+  // get twitter user data in chunks of 100 at a time and wait for all responses
+  await Promise.all( chuncks_of_names.map( async names => {
+    try {
+      var response = await twit.get('users/lookup', { 
+        screen_name: names.toString(),
+        include_entities: false
+      });
+      twitter_users.push(...response.data);
+    }
+    catch(err) {
+      console.log('Function getUsers, call to Twitter "users/lookup":');
+      console.log(err.message);
+    }
+  }));
+
+  return twitter_users;
+}
+
 module.exports = {
-  getTweets: getTweets
+  getTweets:  getTweets,
+  getUsers:   getUsers
 }
