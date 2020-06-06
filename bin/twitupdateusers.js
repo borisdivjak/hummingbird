@@ -42,8 +42,16 @@ Promise.all(config.twitter_trackers.map( async tracker => {
   // for each existing user run a seuqence of steps
   await Promise.all(db_users.map( async existing_user => {
 
-    // find the new data for the user from the twitter responses
-    var new_data = tw_users.find( user => user.id_str === existing_user.id_str );
+    try {
+      // find the new data for the user from the twitter responses
+      var new_data = tw_users.find( user => user.id_str === existing_user.id_str );
+    }
+    catch(err) {
+      console.log('MAPPING ARRAY DATA ', err.message);
+      console.log(existing_user);
+      console.log('twitter objects');
+      console.log(tw_users);
+    }
 
     // if the twitter data has an update (new data is different to existing)
     // update the user (set) and save changes to database
