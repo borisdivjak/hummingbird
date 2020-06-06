@@ -58,7 +58,7 @@ exports.twitterTrackerConnectionsJSON = async function(req, res) {
     // get rich user objects based on screen names from connections
     var screen_names_1 = connections.map( connection => connection.screen_name_1 );
     var screen_names_2 = connections.map( connection => connection.screen_name_2 );
-    var screen_names   = [...new Set(screen_names_1, screen_names_2)];
+    var screen_names   = [...new Set( [...screen_names_1, ...screen_names_2] )];
 
     var users = await TwitterUser.getUsersByScreenName(screen_names);
 
