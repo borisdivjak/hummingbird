@@ -34,12 +34,14 @@ TwitterUserSchema.statics.getUsersByScreenName = function( screen_name ) {
 
 TwitterUserSchema.methods.equalsUserData = function( user_data ) {
   if (
-    this.id_str             ===    user_data.id_str           &&
-    this.screen_name        ===    user_data.screen_name      &&
-    this.name               ===    user_data.name             &&
-    this.location           ===    user_data.location         &&
-    this.description        ===    user_data.description      &&
-    this.followers_count    ===    user_data.followers_count  &&
+    this.id_str             ===    user_data.id_str               &&
+    this.screen_name        ===    user_data.screen_name          &&
+    this.name               ===    user_data.name                 &&
+    this.location           ===    user_data.location             &&
+    this.description        ===    user_data.description          &&
+    // keep follower count within tollerance of 100 ... we don't want to update DB too often
+    this.followers_count    <      user_data.followers_count+100  &&
+    this.followers_count    >      user_data.followers_count-100  &&
     this.profile_image_url  ===    user_data.profile_image_url
   ) {
     return true;

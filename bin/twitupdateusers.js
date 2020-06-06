@@ -55,16 +55,22 @@ Promise.all(config.twitter_trackers.map( async tracker => {
 
     // if the twitter data has an update (new data is different to existing)
     // update the user (set) and save changes to database
-    if ( !existing_user.equalsUserData( new_data )) {
-      try {
-        existing_user.set(new_data);
-        await existing_user.save({validateModifiedOnly: true});
-        console.log( 'Updated user: ', existing_user.screen_name );
+    try {
+      if ( !existing_user.equalsUserData( new_data )) {
+        try {
+          existing_user.set(new_data);
+          await existing_user.save({validateModifiedOnly: true});
+          console.log( 'Updated user: ', existing_user.screen_name );
+        }
+        catch(err) {
+          console.log('Error while updating existing users with new Twitter data');
+          console.log(err.message);
+        }
       }
-      catch(err) {
-        console.log('Error while updating existing users with new Twitter data');
-        console.log(err.message);
-      }
+    }
+    catch(err) {
+      console.log('EQUALS USER DATA ', err.message);
+      console.log(new_data);
     }
   }));
 
