@@ -61,7 +61,6 @@ exports.twitterTrackerConnectionsJSON = async function(req, res) {
     var screen_names   = [...new Set(screen_names_1, screen_names_2)];
 
     var users = await TwitterUser.getUsersByScreenName(screen_names);
-    console.log(users);
 
     var response = {
       elements: users.map( user => {
