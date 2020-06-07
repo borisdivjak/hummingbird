@@ -39,6 +39,7 @@ Promise.all( config.twitter_trackers.map( async tracker => {
         break;
       }
       case 'timeline': {
+        statuses = await Twitter.getTweetsFromTimeline(tracker.parameters);
         break;        
       }
     }

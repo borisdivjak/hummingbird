@@ -20,19 +20,19 @@ var count_per_call = 100; // 100 is the maximum for the standard API
 //  function getTweets - make recursive calls to Twitter to get all relevant results (100 per call)
 //
 
-var getTweetsFromSearch = async (search_params, max_id) => {
-  if (typeof search_params !== 'object') {
-    return Promise.reject(new Error('getTweetsFromSearch requires search parameters object for a twitter query'));
+var getTweetsFromSearch = async (tw_params, max_id) => {
+  if (typeof tw_params !== 'object') {
+    return Promise.reject(new Error('getTweetsFromSearch requires parameters object for a twitter query'));
   }
 
-  search_params.count       = count_per_call;
-  search_params.tweet_mode  = 'extended';
-  search_params.result_type = 'recent';
+  tw_params.count       = count_per_call;
+  tw_params.tweet_mode  = 'extended';
+  tw_params.result_type = 'recent';
   
-  if (max_id != undefined) search_params.max_id = max_id;
+  if (max_id != undefined) tw_params.max_id = max_id;
     
   // get first 100 tweets 
-  var result = await twit.get('search/tweets', search_params);
+  var result = await twit.get('search/tweets', tw_params);
   var statuses = result.data.statuses;
   
   // if more than 0 statuses in response, then there might be more to come, so try to fetch more
@@ -43,14 +43,31 @@ var getTweetsFromSearch = async (search_params, max_id) => {
       var ids = statuses.map( status => status.id_str );
       var min_id = ids.reduce( (a, b) => { return Strint.lt(a,b) ? a : b; });
 
-      var new_statuses = await getTweetsFromSearch(search_params, Strint.sub(min_id,'1'));
+      var new_statuses = await getTweetsFromSearch(tw_params, Strint.sub(min_id,'1'));
       statuses = [...statuses, ...new_statuses];
   }
   return statuses; 
 }
 
 
-var getTweetsFromTimeline = async (screen_name) => {
+var getTweetsFromTimeline = async (tw_params) => {
+  if (typeof tw_params !== 'object') {
+    return Promise.reject(new Error('getTweetsFromTimeline requires parameters object for a twitter query'));
+  }
+
+  tw_params.count       = count_per_call;  
+  tw_params.tweet_mode  = 'extended';
+  
+  // get 100 results from users timeline (tweeted by the user, no mentions etc.)
+  var result = await twit.get('statuses/user_timeline', tw_params);
+  var statuses = result.data;
+  
+  // also get available mentions through the search API (only able to fetch last 7 days though)
+  tw_params.q = '@' + tw_params.screen_name;
+  tw_params.result_type = 'recent';
+  var mentions = await getTweetsFromSearch(tw_params);
+
+  return [...statuses, ...mentions];
 }
 
 
