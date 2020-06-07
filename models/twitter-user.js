@@ -28,6 +28,7 @@ var TwitterUserSchema = new Schema(
   }
 );
 
+
 TwitterUserSchema.virtual('profile_image_url_200x200').get( function() {
   if (this.profile_image_url !== undefined) {
     return this.profile_image_url.replace('normal.', '200x200.'); 
@@ -37,9 +38,6 @@ TwitterUserSchema.virtual('profile_image_url_200x200').get( function() {
   }
 });
 
-TwitterUserSchema.statics.getUsersByScreenName = function( screen_name ) {
-  return this.find({'screen_name': { $in: screen_name }});
-}
 
 TwitterUserSchema.methods.equalsUserData = function( user_data ) {
   if (
@@ -57,6 +55,52 @@ TwitterUserSchema.methods.equalsUserData = function( user_data ) {
   }
   else return false;
 }
+
+
+// extract mentions / twitter handles from user's description field
+
+TwitterUserSchema.methods.getDescriptionMentions = function() {
+  return this.description.match(/\@[A-Za-z0-9_]+/g);
+}
+
+
+TwitterUserSchema.statics.getUsersByScreenName = function( screen_name ) {
+  return this.find({'screen_name': { $in: screen_name }});
+}
+
+
+// go through users' descriptions to extract mentions of other accounts
+// then put together top 10 list
+
+TwitterUserSchema.statics.getTopDescriptionMentions = async function( screen_names ) {
+  var users = [];
+  var mentions_count = [];
+  
+  try {
+    users = await this.find({'screen_name': { $in: screen_names }}, 'description' );
+
+    users.forEach( user => {
+      var mentions = user.getDescriptionMentions();
+      
+      if (mentions !== null) mentions.forEach( mention => {
+        existing_mention = mentions_count.find( mnt => mnt.screen_name.toLowerCase() === mention.toLowerCase() );
+        if ( existing_mention !== undefined ) existing_mention.count++;
+        else {
+          mentions_count.push( { screen_name: mention, count: 1 });
+        }
+      });
+      
+    });
+
+    mentions_count.sort( (a,b) => b.count - a.count );    
+    return mentions_count.slice(0,10);
+  }
+  catch(err) {
+    console.log('Error in TwitterUserSchema.statics.getTopAssocAccounts');
+    console.log(err.message);
+  }
+}
+
 
 TwitterUserSchema.plugin(uniqueValidator);
 

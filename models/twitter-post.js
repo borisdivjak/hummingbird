@@ -103,7 +103,7 @@ TwitterPostSchema.statics.getUserConnections = function() {
   return this.aggregate([
     
     // create list of screen names to pair against
-    { $project: { id_str: '$id_str', user_screen_name: { $setUnion: [ '$entities.user_mentions.screen_name', ['$user.screen_name' ], ['$retweeted_status.user.screen_name' ], ['$quoted_status.user.screen_name' ]] }}},
+    { $project: { id_str  : '$id_str', user_screen_name: { $setUnion: [ '$entities.user_mentions.screen_name', ['$user.screen_name' ], ['$retweeted_status.user.screen_name' ], ['$quoted_status.user.screen_name' ]] }}},
     { $unwind: '$user_screen_name' },
     { $match: { $expr: { $ne: [ '$user_screen_name', null ] }}},
 
@@ -135,6 +135,38 @@ TwitterPostSchema.statics.getUserConnections = function() {
     { $limit: 10000 }
   ]);
 }
+
+
+// return users screen_names across all posts ... both posting and just mentioned
+
+TwitterPostSchema.statics.getAllScreenNames = async function() {
+  var screen_names = [];
+
+  try {
+    var screen_names = await this.aggregate([
+      { $project: { user_screen_name: { $setUnion: [ '$entities.user_mentions.screen_name', ['$user.screen_name' ], ['$retweeted_status.user.screen_name' ], ['$quoted_status.user.screen_name' ]] }}},
+      { $unwind: '$user_screen_name' },
+      
+      // remove all null 
+      { $match: { $expr: { $ne: [ '$user_screen_name', null ] }}},
+      
+      // make a set ... remove duplicates
+      { $group: { 
+        _id: { $concat: '$user_screen_name' }
+      }},
+      { $sort : { count : -1 } },
+      { $limit: 10000 }
+    ]);
+  }
+  catch(err) {
+    console.log('Error in TwitterPostSchema.statics.getAllScreenNames');
+    console.log(err.message);
+  }
+  
+  // return array of strings (names) rather than array of objects
+  return screen_names.map( name => name._id );
+}
+
 
 TwitterPostSchema.plugin(uniqueValidator);
 
