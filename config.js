@@ -1,6 +1,5 @@
 var hummmconfig = {
   twitter_trackers: [
-/*
     {
       id:           '1',
       name:         'Service design UK',
@@ -19,7 +18,6 @@ var hummmconfig = {
         geocode:      '"52.5 -1.5 200km"'
       }
     },            
-*/
     {
       id:           'ubxd',
       name:         'Unboxed tweets and mentions',
