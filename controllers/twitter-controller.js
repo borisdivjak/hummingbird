@@ -69,7 +69,7 @@ exports.twitterTrackerConnectionsJSON = async function(req, res) {
           label:        user.name, 
           description:  user.description,
           followers_count: user.followers_count, 
-          image:        user.profile_image_url,
+          image:        user.profile_image_url_200x200,
           'twitter profile': user.screen_name
         }
       }),

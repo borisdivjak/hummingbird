@@ -28,6 +28,15 @@ var TwitterUserSchema = new Schema(
   }
 );
 
+TwitterUserSchema.virtual('profile_image_url_200x200').get( function() {
+  if (this.profile_image_url !== undefined) {
+    return this.profile_image_url.replace('normal.', '200x200.'); 
+  }
+  else {
+    return undefined;
+  }
+});
+
 TwitterUserSchema.statics.getUsersByScreenName = function( screen_name ) {
   return this.find({'screen_name': { $in: screen_name }});
 }
