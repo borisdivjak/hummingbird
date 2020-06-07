@@ -67,6 +67,9 @@ var getTweetsFromTimeline = async (tw_params) => {
   tw_params.result_type = 'recent';
   var mentions = await getTweetsFromSearch(tw_params);
 
+  // remove mentions of own tweets - to avoid duplication
+  mentions = mentions.filter( mention => mention.user.screen_name.toLowerCase() !== tw_params.screen_name.toLowerCase() );
+
   return [...statuses, ...mentions];
 }
 

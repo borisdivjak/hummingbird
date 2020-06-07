@@ -33,7 +33,15 @@ var hummmconfig = {
       parameters: {
         screen_name: 'ubxd', 
       }
-    }            
+    },
+    {
+      id:           'LDgovUK',
+      name:         'Local Gov Digital',
+      type:         'timeline',
+      parameters: {
+        screen_name: 'LDgovUK', 
+      }
+    }    
   ]
 }
   
