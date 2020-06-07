@@ -15,10 +15,6 @@ var config = require('../config.js');
 //  
 
 Promise.all( config.twitter_trackers.map( async tracker => {
-  var users = []; // we'll need this to store users temporarily (to simplify promise logic)
-  var user_ids = [];
-  
-  
   try {
     
     await TwitterPost[tracker.id].init();
@@ -34,20 +30,30 @@ Promise.all( config.twitter_trackers.map( async tracker => {
   
     // GET NEW TWEETS AND SAVE THEM
       
-    // get tweets from twitter
-    var result = await Twitter.getTweets(tracker.parameters);
+    var statuses = [];
+
+    // get tweets from twitter - method depending on tracker type
+    switch(tracker.type) {
+      case 'search': {
+        statuses = await Twitter.getTweetsFromSearch(tracker.parameters);
+        break;
+      }
+      case 'timeline': {
+        break;        
+      }
+    }
   
     // after twitter call, check for exsiting tweets (IDs) – check if any duplicates are already saved in database  
-    var existing_posts = await TwitterPost[tracker.id].find({'id_str': { $in: result.data.statuses.map( status => status.id_str) }}, 'id_str');
+    var existing_posts = await TwitterPost[tracker.id].find({'id_str': { $in: statuses.map( status => status.id_str) }}, 'id_str');
   
     // after both calls (to twitter and to database), remove existing tweets from twitter results and return that
     var existing_ids = existing_posts.map(post => post.id_str);
   
     // filter out tweets with ids that exist in database
-    result.data.statuses = result.data.statuses.filter( status => !existing_ids.includes(status.id_str) );
+    statuses = statuses.filter( status => !existing_ids.includes(status.id_str) );
   
     // save remaining tweets to database
-    var saved_tweets = await TwitterPost[tracker.id].insertMany(result.data.statuses);
+    var saved_tweets = await TwitterPost[tracker.id].insertMany(statuses);
     console.log('NEW RECORDS CREATED FOR "' + tracker.name + '": ' + saved_tweets.length);
   
 
@@ -55,10 +61,10 @@ Promise.all( config.twitter_trackers.map( async tracker => {
     // EXTRACT AND SAVE NEW USERS
    
     // create array of users that are authors of new messages
-    users = result.data.statuses.map( status => status.user);
+    var users = statuses.map( status => status.user);
     
     // remove duplicates from users array (check where user_ids appear repeatedly in array)
-    user_ids = users.map( user => user.id_str);
+    var user_ids = users.map( user => user.id_str);
     users = users.filter((user, index) => user_ids.indexOf(user.id_str) === index);
   
     // get list of users that are already in database

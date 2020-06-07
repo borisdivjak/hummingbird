@@ -20,9 +20,9 @@ var count_per_call = 100; // 100 is the maximum for the standard API
 //  function getTweets - make recursive calls to Twitter to get all relevant results (100 per call)
 //
 
-var getTweets = async (search_params, max_id) => {
+var getTweetsFromSearch = async (search_params, max_id) => {
   if (typeof search_params !== 'object') {
-    return Promise.reject(new Error('getTweets requires search parameters object for a twitter query'));
+    return Promise.reject(new Error('getTweetsFromSearch requires search parameters object for a twitter query'));
   }
 
   search_params.count       = count_per_call;
@@ -32,29 +32,25 @@ var getTweets = async (search_params, max_id) => {
   if (max_id != undefined) search_params.max_id = max_id;
     
   // get first 100 tweets 
-  var tw_call_1 = twit.get('search/tweets', search_params);
+  var result = await twit.get('search/tweets', search_params);
+  var statuses = result.data.statuses;
   
-  // if there's more, call API again to get next 'page'
-  var tw_call_2 = tw_call_1.then( result => {
-    if (result.data.statuses.length > 0 || result.data.statuses.length > max_tweet_results) {
+  // if more than 0 statuses in response, then there might be more to come, so try to fetch more
+  if (statuses.length > 0 && statuses.length < max_tweet_results) {
 
       // get min_id from all current ids and pass that to next twitter call as max_id
-      // (through a recursive getTweets) 
-      var ids = result.data.statuses.map( status => status.id_str );
+      // (through a recursive getTweetsFromSearch) 
+      var ids = statuses.map( status => status.id_str );
       var min_id = ids.reduce( (a, b) => { return Strint.lt(a,b) ? a : b; });
 
-      return getTweets(search_params, Strint.sub(min_id,'1'));
-    }
-    else return result;
-  });
+      var new_statuses = await getTweetsFromSearch(search_params, Strint.sub(min_id,'1'));
+      statuses = [...statuses, ...new_statuses];
+  }
+  return statuses; 
+}
 
-  // merge statuses from this and from next call to twitter API
-  return Promise.all([tw_call_1, tw_call_2]).then( ([result_1, result_2]) => {
-      var new_statuses = [ ...result_1.data.statuses, ...result_2.data.statuses ];      
-      result_1.data.statuses = new_statuses;
-      return result_1;
-  });
-  
+
+var getTweetsFromTimeline = async (screen_name) => {
 }
 
 
@@ -94,6 +90,7 @@ var getUsers = async (screen_names) => {
 }
 
 module.exports = {
-  getTweets:  getTweets,
-  getUsers:   getUsers
+  getTweetsFromSearch:    getTweetsFromSearch,
+  getTweetsFromTimeline:  getTweetsFromTimeline,
+  getUsers:               getUsers
 }
