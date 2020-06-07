@@ -63,7 +63,9 @@ var getTweetsFromTimeline = async (tw_params) => {
   var statuses = result.data;
   
   // also get available mentions through the search API (only able to fetch last 7 days though)
-  tw_params.q = '@' + tw_params.screen_name;
+  // note: we can specify a different queary in the config to do a combined timeline + search feed
+  // so if q is defined, leave it as it is
+  if ( tw_params.q === undefined ) tw_params.q = '@' + tw_params.screen_name;
   tw_params.result_type = 'recent';
   var mentions = await getTweetsFromSearch(tw_params);
 

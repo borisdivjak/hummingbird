@@ -40,8 +40,11 @@ var hummmconfig = {
       type:         'timeline',
       parameters: {
         screen_name: 'LDgovUK', 
+        // timeline also calls a search query, so we can specify it here
+        q:           'digital localgov OR "local digital" OR #localdigital OR @LDgovUK OR @LocalGovDigital', 
+        geocode:      '"52.5 -1.5 200km"'
       }
-    }    
+    }
   ]
 }
   
