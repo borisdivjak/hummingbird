@@ -64,8 +64,11 @@ exports.twitterTrackerConnectionsJSON = async function(req, res) {
     var screen_names_2 = connections.map( connection => connection.screen_name_2 );
     var screen_names   = [...new Set( [...screen_names_1, ...screen_names_2] )];
 
-    var users = await TwitterUser.getUsersByScreenName(screen_names);
-
+    var users           = await TwitterUser.getUsersByScreenName(screen_names);
+    var orgs            = await TwitterUser.getTopDescriptionMentions(screen_names, { limit: 0 });
+    var orgs_lc         = orgs.map ( org => org.screen_name.toLowerCase() );
+    var org_connections = await TwitterUser.getUserOrgConnections(screen_names, { orgs: orgs_lc });
+    
     var response = {
       elements: users.map( user => {
         return { 
@@ -74,6 +77,7 @@ exports.twitterTrackerConnectionsJSON = async function(req, res) {
           description:  user.description,
           followers_count: user.followers_count, 
           image:        user.profile_image_url_200x200,
+          type:         orgs_lc.includes(user.screen_name.toLowerCase()) ? 'Organisation' : 'User',
           'twitter profile': user.screen_name
         }
       }),
@@ -82,10 +86,24 @@ exports.twitterTrackerConnectionsJSON = async function(req, res) {
           from:       connection.screen_name_1,
           to:         connection.screen_name_2,
           strength:   connection.count,
+          type:       'Retweets and mentions',
           direction:  'mutual'
         }   
       })
     };
+    
+    // if organisation connections are requested then add those to response
+    if (req.query.orgs == 'true') {
+      response.connections.push( ...org_connections.map( org_c => {
+        return { 
+          from:       org_c.user,
+          to:         org_c.org,
+          strength:   10,
+          type:       'Organisations',
+          direction:  'mutual'
+        }   
+      }));
+    }
     
     console.log( 'Elements: ' + response.elements.length );
     console.log( 'Connections: ' + response.connections.length );

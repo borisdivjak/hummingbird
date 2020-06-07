@@ -60,7 +60,14 @@ TwitterUserSchema.methods.equalsUserData = function( user_data ) {
 // extract mentions / twitter handles from user's description field
 
 TwitterUserSchema.methods.getDescriptionMentions = function() {
-  return this.description.match(/\@[A-Za-z0-9_]+/g);
+  var mentions = this.description.match(/\@[A-Za-z0-9_]+/g);
+
+  // if null then return empty array
+  if (mentions === null) mentions = [];
+
+  // strip the @ sign before returning
+  var mentions_no_at = mentions.map( mention => mention.slice(1) );
+  return mentions_no_at;
 }
 
 
@@ -70,14 +77,53 @@ TwitterUserSchema.statics.getUsersByScreenName = function( screen_name ) {
 
 
 // go through users' descriptions to extract mentions of other accounts
+// and return array of connection pairs [ { user, org }, {user, org}, ...]
+
+TwitterUserSchema.statics.getUserOrgConnections = 
+  async function( screen_names, options = { orgs: [], all_orgs: false } ) {
+
+  var users = [];
+  var connections = [];
+
+  try {
+    // convert all orgs to lowercase for matching
+    var orgs = options.orgs.map( org => org.toLowerCase() );
+  
+    users = await this.find({'screen_name': { $in: screen_names }}, { description: 1, screen_name: 1 } );
+
+    users.forEach( user => {
+      var mentions = user.getDescriptionMentions();
+      
+      if (mentions !== null) mentions.forEach( mention => {
+        if ( options.all_orgs === true  ||  orgs.includes(mention.toLowerCase())  )
+        connections.push( { user: user.screen_name, org: mention.toLowerCase() });
+      });
+    });
+
+    return connections;
+  }
+  catch(err) {
+    console.log('Error in TwitterUserSchema.statics.getUserOrgConnections');
+    console.log(err.message);
+  }
+  
+}
+
+
+// go through users' descriptions to extract mentions of other accounts
 // then put together top 10 list
 
-TwitterUserSchema.statics.getTopDescriptionMentions = async function( screen_names ) {
+TwitterUserSchema.statics.getTopDescriptionMentions = 
+  async function( screen_names, options = { limit: 10, all_users: false } ) {
+
   var users = [];
   var mentions_count = [];
   
   try {
-    users = await this.find({'screen_name': { $in: screen_names }}, 'description' );
+    // if options.all_users is true, then fetch all users, otherwise match array of screen_names
+    if (options.all_users) users = await this.find({}, 'description' );
+    else users = await this.find({'screen_name': { $in: screen_names }}, 'description' );
+
 
     users.forEach( user => {
       var mentions = user.getDescriptionMentions();
@@ -93,10 +139,14 @@ TwitterUserSchema.statics.getTopDescriptionMentions = async function( screen_nam
     });
 
     mentions_count.sort( (a,b) => b.count - a.count );    
-    return mentions_count.slice(0,10);
+    
+    // if limit is 0, set limit so that mentiones with count = 1 get disqualified (less likely to be orgs)
+    if ( options.limit === 0 ) options.limit = mentions_count.map( m => m.count).indexOf(1);
+
+    return mentions_count.slice(0, options.limit);
   }
   catch(err) {
-    console.log('Error in TwitterUserSchema.statics.getTopAssocAccounts');
+    console.log('Error in TwitterUserSchema.statics.getTopDescriptionMentions');
     console.log(err.message);
   }
 }
