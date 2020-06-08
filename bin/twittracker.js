@@ -42,6 +42,10 @@ Promise.all( config.twitter_trackers.map( async tracker => {
         statuses = await Twitter.getTweetsFromTimeline(tracker.parameters);
         break;        
       }
+      case 'list': {
+        statuses = await Twitter.getTweetsFromList(tracker.parameters);
+        break;        
+      }
     }
   
     // after twitter call, check for exsiting tweets (IDs) – check if any duplicates are already saved in database  

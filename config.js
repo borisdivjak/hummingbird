@@ -92,6 +92,14 @@ var hummmconfig = {
       parameters: {
         screen_name: 'hacthousing', 
       }
+    },
+    {
+      id:           'local_gov_list',
+      name:         'Jo\'s local gov list',
+      type:         'list',
+      parameters: {
+        list_id: '1235246896605732868', 
+      }
     }
     
     

@@ -11,7 +11,7 @@ var twit = new Twitter({
   access_token_secret:  process.env.TW_TOKEN_SECRET
 })
 
-var max_tweet_results = 10000; // limit calling the api at 100 calls (100 results x 100 calls = 10000)
+var max_tweet_results = 5000; // limit calling the api 
 var count_per_call = 100; // 100 is the maximum for the standard API
 
 
@@ -44,6 +44,35 @@ var getTweetsFromSearch = async (tw_params, max_id) => {
       var min_id = ids.reduce( (a, b) => { return Strint.lt(a,b) ? a : b; });
 
       var new_statuses = await getTweetsFromSearch(tw_params, Strint.sub(min_id,'1'));
+      statuses = [...statuses, ...new_statuses];
+  }
+  return statuses; 
+}
+
+
+var getTweetsFromList = async (tw_params, max_id) => {
+  if (typeof tw_params !== 'object') {
+    return Promise.reject(new Error('getTweetsFromList requires parameters object for a twitter query'));
+  }
+
+  tw_params.count       = 200; // seems like the list call allows 200 results
+  tw_params.tweet_mode  = 'extended';
+  
+  if (max_id != undefined) tw_params.max_id = max_id;
+    
+  // get first 100 tweets 
+  var result = await twit.get('lists/statuses', tw_params);
+  var statuses = result.data;
+  
+  // if more than 0 statuses in response, then there might be more to come, so try to fetch more
+  if (statuses.length > 0 && statuses.length < max_tweet_results) {
+
+      // get min_id from all current ids and pass that to next twitter call as max_id
+      // (through a recursive getTweetsFromSearch) 
+      var ids = statuses.map( status => status.id_str );
+      var min_id = ids.reduce( (a, b) => { return Strint.lt(a,b) ? a : b; });
+
+      var new_statuses = await getTweetsFromList(tw_params, Strint.sub(min_id,'1'));
       statuses = [...statuses, ...new_statuses];
   }
   return statuses; 
@@ -113,6 +142,7 @@ var getUsers = async (screen_names) => {
 
 module.exports = {
   getTweetsFromSearch:    getTweetsFromSearch,
+  getTweetsFromList:      getTweetsFromList,
   getTweetsFromTimeline:  getTweetsFromTimeline,
   getUsers:               getUsers
 }
