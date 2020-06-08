@@ -11,7 +11,7 @@
 <table>
 {% for user in top_posters %}
   <tr>
-    <td>{{ user.count }}</td><td>{{ user.screen_name }}</td>
+    <td>{{ user.count }}</td><td><a href="https://twitter.com/{{ user.screen_name }}" target="_blank">{{ user.screen_name }}</a></td>
   </tr>
 {% endfor %}
 </table>
@@ -23,7 +23,7 @@
 <table>
 {% for hashtag in top_hashtags %}
   <tr>
-    <td>{{ hashtag.count }}</td><td>{{ hashtag.text }}</td>
+    <td>{{ hashtag.count }}</td><td><a href="https://twitter.com/search?q=%23{{ hashtag.text }}" target="_blank">{{ hashtag.text }}</a></td>
   </tr>
 {% endfor %}
 </table>
@@ -35,7 +35,7 @@
 <table>
 {% for user in top_rm %}
   <tr>
-    <td>{{ user.count }}</td><td>{{ user.screen_name }}</td>
+    <td>{{ user.count }}</td><td><a href="https://twitter.com/{{ user.screen_name }}" target="_blank">{{ user.screen_name }}</a></td>
   </tr>
 {% endfor %}
 </table>
@@ -48,7 +48,7 @@
 <table>
 {% for org in top_orgs %}
   <tr>
-    <td>{{ org.count }}</td><td>{{ org.screen_name }}</td>
+    <td>{{ org.count }}</td><td><a href="https://twitter.com/{{ org.screen_name }}" target="_blank">{{ org.screen_name }}</a></td>
   </tr>
 {% endfor %}
 </table>
@@ -56,6 +56,6 @@
 <br />
 
 <p><a href="/tracker/{{ tracker.id }}/connections">List connections between twitter users</a></p>
-<p><a href="/tracker/{{ tracker.id }}/connections.json">Export connections (json)</a></p>
+<p><a href="/tracker/{{ tracker.id }}/connections.json?orgs=true">Export connections (json)</a></p>
 
 {% endblock %}
