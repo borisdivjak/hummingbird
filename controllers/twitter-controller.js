@@ -80,15 +80,15 @@ exports.twitterTrackerConnectionsJSON = async function(req, res) {
           type:         orgs_lc.includes(user.screen_name.toLowerCase()) ? 'Organisation' : 'User',
           'twitter profile': user.screen_name,
           posted: connections.reduce( (count, connection) => { 
-            // iff connection mataches screen_name, increase count
+            // if connection mataches screen_name, increase count
             return (connection.screen_name_1.toLowerCase() == user.screen_name.toLowerCase()) ? count+1 : count;
           }, 0),
           retw_or_mentioned: connections.reduce( (count, connection) => { 
-            // iff connection mataches screen_name, increase count
+            // if connection mataches screen_name, increase count
             return (connection.screen_name_2.toLowerCase() == user.screen_name.toLowerCase()) ? count+1 : count;
           }, 0),
           has_orgs: org_connections.reduce( (count, connection) => { 
-            // iff connection mataches screen_name, increase count
+            // if connection mataches screen_name, increase count
             return (connection.user.toLowerCase() == user.screen_name.toLowerCase()) ? count+1 : count;
           }, 0)
         }
