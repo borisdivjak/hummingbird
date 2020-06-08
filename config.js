@@ -44,7 +44,16 @@ var hummmconfig = {
         q:           'digital localgov OR "local digital" OR #localdigital OR @LDgovUK OR @LocalGovDigital', 
         geocode:      '"52.5 -1.5 200km"'
       }
+    },
+    {
+      id:           'Leeds 1',
+      name:         'LeedsCC_News: timeline',
+      type:         'timeline',
+      parameters: {
+        screen_name: 'LeedsCC_News', 
+      }
     }
+    
   ]
 }
   
