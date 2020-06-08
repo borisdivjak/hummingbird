@@ -92,6 +92,14 @@ var hummmconfig = {
       parameters: {
         screen_name: 'IamKathrynGrace', 
       }
+    },
+    {
+      id:           'hact',
+      name:         'HACT',
+      type:         'timeline',
+      parameters: {
+        screen_name: 'hacthousing', 
+      }
     }
     
     
