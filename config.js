@@ -70,11 +70,27 @@ var hummmconfig = {
       }
     },
     {
+      id:           'Leeds 4',
+      name:         '@leedsgovdesign',
+      type:         'timeline',
+      parameters: {
+        screen_name: 'leedsgovdesign', 
+      }
+    },
+    {
       id:           'DXW',
       name:         'DXW',
       type:         'timeline',
       parameters: {
         screen_name: 'dxw', 
+      }
+    },
+    {
+      id:           'k_grace',
+      name:         'Kathryn Grace',
+      type:         'timeline',
+      parameters: {
+        screen_name: 'IamKathrynGrace', 
       }
     }
     
