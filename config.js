@@ -52,7 +52,33 @@ var hummmconfig = {
       parameters: {
         screen_name: 'LeedsCC_News', 
       }
+    },
+    {
+      id:           'Leeds 2',
+      name:         'Search: leeds digital',
+      type:         'search',
+      parameters: {
+        q: 'leeds digital', 
+      }
+    },
+    {
+      id:           'Leeds 3',
+      name:         'Search: leeds.gov',
+      type:         'search',
+      parameters: {
+        q: 'leeds.gov', 
+      }
+    },
+    {
+      id:           'DXW',
+      name:         'DXW',
+      type:         'timeline',
+      parameters: {
+        screen_name: 'dxw', 
+      }
     }
+    
+    
     
   ]
 }
