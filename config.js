@@ -2,7 +2,7 @@ var hummmconfig = {
   twitter_trackers: [
     {
       id:           '1',
-      name:         'Service design UK',
+      name:         'Service design UK (searching keywords and hashtags)',
       type:         'search',
       parameters: {
         q:            '#servicedesign OR "service design" OR "designing services" OR "designing public services" OR "digital discovery" OR "design research" OR "user research" OR "user centred" OR "human centred" OR "user-centred" OR "human-centred" OR "experience design"', 
@@ -11,7 +11,7 @@ var hummmconfig = {
     },
     {
       id:           '2',
-      name:         'Ruby on Rails UK',
+      name:         'Ruby on Rails UK (limited to searching #rubyonrails at the moment)',
       type:         'search',
       parameters: {
         q:            '"ruby on rails" OR #rubyonrails', 
@@ -19,16 +19,8 @@ var hummmconfig = {
       }
     },            
     {
-      id:           'ubxd',
-      name:         'Unboxed tweets and mentions',
-      type:         'search',
-      parameters: {
-        q:            'from:ubxd OR to:ubxd OR @ubxd', 
-      }
-    },            
-    {
       id:           'ubxdt',
-      name:         'Unboxed timeline',
+      name:         'Unboxed tweets and mentions',
       type:         'timeline',
       parameters: {
         screen_name: 'ubxd', 
@@ -36,7 +28,7 @@ var hummmconfig = {
     },
     {
       id:           'LDgovUK',
-      name:         'Local Gov Digital',
+      name:         'Local Digital Collaboration Unit - tweets and mentions ',
       type:         'timeline',
       parameters: {
         screen_name: 'LDgovUK', 
@@ -47,7 +39,7 @@ var hummmconfig = {
     },
     {
       id:           'Leeds 1',
-      name:         'LeedsCC_News: timeline',
+      name:         '@LeedsCC_News tweets and mentions',
       type:         'timeline',
       parameters: {
         screen_name: 'LeedsCC_News', 
@@ -55,7 +47,7 @@ var hummmconfig = {
     },
     {
       id:           'Leeds 2',
-      name:         'Search: leeds digital',
+      name:         'Leeds digital (keyword search for "leeds and digital")',
       type:         'search',
       parameters: {
         q: 'leeds digital', 
@@ -63,7 +55,7 @@ var hummmconfig = {
     },
     {
       id:           'Leeds 3',
-      name:         'Search: leeds.gov',
+      name:         'Leeds.gov (keyword search for "leeds.gov")',
       type:         'search',
       parameters: {
         q: 'leeds.gov', 
@@ -71,7 +63,7 @@ var hummmconfig = {
     },
     {
       id:           'Leeds 4',
-      name:         '@leedsgovdesign',
+      name:         '@leedsgovdesign tweets and mentions',
       type:         'timeline',
       parameters: {
         screen_name: 'leedsgovdesign', 
@@ -79,7 +71,7 @@ var hummmconfig = {
     },
     {
       id:           'DXW',
-      name:         'DXW',
+      name:         'DXW tweets and mentions',
       type:         'timeline',
       parameters: {
         screen_name: 'dxw', 
@@ -87,7 +79,7 @@ var hummmconfig = {
     },
     {
       id:           'k_grace',
-      name:         'Kathryn Grace',
+      name:         'Kathryn Grace - tweets and mentions',
       type:         'timeline',
       parameters: {
         screen_name: 'IamKathrynGrace', 
@@ -95,7 +87,7 @@ var hummmconfig = {
     },
     {
       id:           'hact',
-      name:         'HACT',
+      name:         'HACT - tweets and mentions',
       type:         'timeline',
       parameters: {
         screen_name: 'hacthousing', 
