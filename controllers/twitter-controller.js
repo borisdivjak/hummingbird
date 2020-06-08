@@ -78,7 +78,15 @@ exports.twitterTrackerConnectionsJSON = async function(req, res) {
           followers_count: user.followers_count, 
           image:        user.profile_image_url_200x200,
           type:         orgs_lc.includes(user.screen_name.toLowerCase()) ? 'Organisation' : 'User',
-          'twitter profile': user.screen_name
+          'twitter profile': user.screen_name,
+          posted: connections.reduce( (count, connection) => { 
+            // iff connection mataches screen_name, increase count
+            return (connection.screen_name_1.toLowerCase() == user.screen_name.toLowerCase()) ? count+1 : count;
+          }, 0),
+          retw_or_mentioned: connections.reduce( (count, connection) => { 
+            // iff connection mataches screen_name, increase count
+            return (connection.screen_name_2.toLowerCase() == user.screen_name.toLowerCase()) ? count+1 : count;
+          }, 0)
         }
       }),
       connections: connections.map( connection => {
@@ -87,7 +95,7 @@ exports.twitterTrackerConnectionsJSON = async function(req, res) {
           to:         connection.screen_name_2.toLowerCase(),
           strength:   connection.count,
           type:       'Retweets and mentions',
-          direction:  'mutual'
+          direction:  'directed'
         }   
       })
     };
@@ -100,7 +108,7 @@ exports.twitterTrackerConnectionsJSON = async function(req, res) {
           to:         org_c.org.toLowerCase(),
           strength:   10,
           type:       'Organisations',
-          direction:  'mutual'
+          direction:  'directed'
         }   
       }));
     }

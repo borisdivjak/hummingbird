@@ -102,18 +102,16 @@ TwitterPostSchema.statics.getTopRetweetedOrMentioned = function() {
 TwitterPostSchema.statics.getUserConnections = function() {
   return this.aggregate([
     
-    // create list of screen names to pair against
-    { $project: { id_str  : '$id_str', user_screen_name: { $setUnion: [ '$entities.user_mentions.screen_name', ['$user.screen_name' ], ['$retweeted_status.user.screen_name' ], ['$quoted_status.user.screen_name' ]] }}},
-    { $unwind: '$user_screen_name' },
-    { $match: { $expr: { $ne: [ '$user_screen_name', null ] }}},
+    // create list of screen names that posted the tweets
+    { $project: { id_str  : '$id_str', user_screen_name: '$user.screen_name' }},
 
-    // then create the same list again ... to pair against itself (find pairs where the post's id_str is the same
+    // then create a list of everyone that was mentioned or retweeted in their tweets
     { $lookup : {
         from : this.collection.name,
         let : { start_id: '$id_str'},
         pipeline: [
           { $match: { $expr: { $eq: [ '$id_str', '$$start_id' ] }}},
-          { $project: { id_str: '$id_str', user_screen_name: { $setUnion: [ '$entities.user_mentions.screen_name', ['$user.screen_name' ], ['$retweeted_status.user.screen_name' ], ['$quoted_status.user.screen_name' ]] }}},
+          { $project: { id_str: '$id_str', user_screen_name: { $setUnion: [ '$entities.user_mentions.screen_name', ['$retweeted_status.user.screen_name' ], ['$quoted_status.user.screen_name' ]] }}},
           { $unwind: '$user_screen_name' }
         ],
         as : "linked_to"
@@ -121,9 +119,6 @@ TwitterPostSchema.statics.getUserConnections = function() {
     { $unwind: '$linked_to' },
     { $match: { $expr: { $ne: [ '$linked_to.user_screen_name', null ] }}},
     
-    // exclude duplicate values (every pair appears twice, so onle use the pair)
-    { $match: { $expr: { $gt: [ '$linked_to.user_screen_name', '$user_screen_name' ] }}},
-
     // then count all occurences of distinc pairs
     { $group: { 
       _id: { $concat: ['$user_screen_name',' ','$linked_to.user_screen_name' ] }, 
