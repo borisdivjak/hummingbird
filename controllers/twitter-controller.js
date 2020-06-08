@@ -72,7 +72,7 @@ exports.twitterTrackerConnectionsJSON = async function(req, res) {
     var response = {
       elements: users.map( user => {
         return { 
-          id:           user.screen_name, 
+          id:           user.screen_name.toLowerCase(), 
           label:        user.name, 
           description:  user.description,
           followers_count: user.followers_count, 
@@ -83,8 +83,8 @@ exports.twitterTrackerConnectionsJSON = async function(req, res) {
       }),
       connections: connections.map( connection => {
         return { 
-          from:       connection.screen_name_1,
-          to:         connection.screen_name_2,
+          from:       connection.screen_name_1.toLowerCase(),
+          to:         connection.screen_name_2.toLowerCase(),
           strength:   connection.count,
           type:       'Retweets and mentions',
           direction:  'mutual'
@@ -96,8 +96,8 @@ exports.twitterTrackerConnectionsJSON = async function(req, res) {
     if (req.query.orgs == 'true') {
       response.connections.push( ...org_connections.map( org_c => {
         return { 
-          from:       org_c.user,
-          to:         org_c.org,
+          from:       org_c.user.toLowerCase(),
+          to:         org_c.org.toLowerCase(),
           strength:   10,
           type:       'Organisations',
           direction:  'mutual'
