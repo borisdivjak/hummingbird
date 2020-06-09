@@ -100,10 +100,16 @@ var hummmconfig = {
       parameters: {
         list_id: '1235246896605732868', 
       }
+    },
+    {
+      id:           'data_uk',
+      name:         'Data list',
+      type:         'list',
+      parameters: {
+        list_id: '1270444415023267840', 
+      }
     }
-    
-    
-    
+        
   ]
 }
   
