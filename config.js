@@ -14,8 +14,16 @@ var hummmconfig = {
       name:         'Ruby on Rails UK (limited to searching #rubyonrails at the moment)',
       type:         'search',
       parameters: {
-        q:            '"ruby on rails" OR #rubyonrails', 
+        q:            '"ruby on rails" OR #rubyonrails OR from:lrug OR @lrug', 
         geocode:      '"52.5 -1.5 200km"'
+      }
+    },            
+    {
+      id:           'lrug',
+      name:         'El Rug',
+      type:         'timeline',
+      parameters: {
+        screen_name: 'lrug', 
       }
     },            
     {
