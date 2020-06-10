@@ -55,7 +55,7 @@ TwitterPostSchema.statics.getTopPosters = function() {
   return this.aggregate([
     { $group: { _id: '$user.id_str', screen_name: { $first: '$user.screen_name' },  count: { $sum: 1 }}},
     { $sort : { count : -1 } },
-    { $limit: 10 }
+    { $limit: config.top_list_limit }
   ]);
 }
 
@@ -64,7 +64,7 @@ TwitterPostSchema.statics.getTopHashtags = function() {
     { $unwind: '$entities.hashtags' },
     { $group: { _id: { $toLower: '$entities.hashtags.text' }, text: { $first: '$entities.hashtags.text' },  count: { $sum: 1 }}},
     { $sort : { count : -1 } },
-    { $limit: 10 }
+    { $limit: config.top_list_limit }
   ]);
 }
 
@@ -73,7 +73,7 @@ TwitterPostSchema.statics.getTopMentions = function() {
     { $unwind: '$entities.user_mentions' },
     { $group: { _id: '$entities.user_mentions.id_str', screen_name: { $first: '$entities.user_mentions.screen_name' },  count: { $sum: 1 }}},
     { $sort : { count : -1 } },
-    { $limit: 10 }
+    { $limit: config.top_list_limit }
   ]);
 }
 
@@ -84,7 +84,7 @@ TwitterPostSchema.statics.getTopRetweeted = function() {
     { $match: { 'user_screen_name': { $exists: true, $ne: null }}},
     { $group: { _id: '$user_screen_name', screen_name: { $first: '$user_screen_name' },  count: { $sum: 1 }}},
     { $sort : { count : -1 } },
-    { $limit: 10 }
+    { $limit: config.top_list_limit }
   ]);
 }
 
@@ -95,7 +95,7 @@ TwitterPostSchema.statics.getTopRetweetedOrMentioned = function() {
     { $match: { 'user_screen_name': { $exists: true, $ne: null }}},
     { $group: { _id: '$user_screen_name', screen_name: { $first: '$user_screen_name' },  count: { $sum: 1 }}},
     { $sort : { count : -1 } },
-    { $limit: 10 }
+    { $limit: config.top_list_limit }
   ]);
 }
 

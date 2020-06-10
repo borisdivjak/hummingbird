@@ -110,7 +110,8 @@ var hummmconfig = {
       }
     }
         
-  ]
+  ],
+  top_list_limit: 20
 }
   
 

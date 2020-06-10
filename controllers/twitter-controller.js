@@ -21,7 +21,8 @@ exports.twitterTrackerInfo = async function(req, res) {
         top_posters:   top_posters,
         top_hashtags:  top_hashtags,
         top_rm:        top_rm,
-        top_orgs:      top_orgs
+        top_orgs:      top_orgs,
+        top_list_limit: config.top_list_limit
     });
   }
   catch(err) {

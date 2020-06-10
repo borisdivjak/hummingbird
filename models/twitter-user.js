@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var uniqueValidator = require('mongoose-unique-validator');
+var config = require('../config.js')
 
 var Schema = mongoose.Schema;
 
@@ -111,10 +112,10 @@ TwitterUserSchema.statics.getUserOrgConnections =
 
 
 // go through users' descriptions to extract mentions of other accounts
-// then put together top 10 list
+// then put together top XX list
 
 TwitterUserSchema.statics.getTopDescriptionMentions = 
-  async function( screen_names, options = { limit: 10, all_users: false } ) {
+  async function( screen_names, options = { limit: config.top_list_limit, all_users: false } ) {
 
   var users = [];
   var mentions_count = [];

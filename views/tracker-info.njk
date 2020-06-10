@@ -6,7 +6,7 @@
 
 <br />
 
-<h3>Top 10 posters</h3>
+<h3>Top {{ top_list_limit }} posters</h3>
 
 <table>
 {% for user in top_posters %}
@@ -18,7 +18,7 @@
   
 <br />
 
-<h3>Top 10 hashtags</h3>
+<h3>Top {{ top_list_limit }} hashtags</h3>
   
 <table>
 {% for hashtag in top_hashtags %}
@@ -30,7 +30,7 @@
 
 <br />
 
-<h3>Top 10 retweeted or mentioned users</h3>
+<h3>Top {{ top_list_limit }} retweeted or mentioned users</h3>
   
 <table>
 {% for user in top_rm %}
@@ -43,7 +43,7 @@
 
 <br />
 
-<h3>Top 10 organisations (linked to in users' descriptions)</h3>
+<h3>Top {{ top_list_limit }} organisations (linked to in users' descriptions)</h3>
   
 <table>
 {% for org in top_orgs %}
