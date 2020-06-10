@@ -108,8 +108,40 @@ var hummmconfig = {
       parameters: {
         list_id: '1270444415023267840', 
       }
+    },
+    {
+      id:           'data_uk_2',
+      name:         'Data Management Search',
+      type:         'search',
+      parameters: {
+        q:            '#masterdatamanagement OR #mdm OR "master data management" OR "customer 360"', 
+        geocode:      '"52.5 -1.5 500km"'
+      }
+    },
+    {
+      id:           'data_world',
+      name:         'Data Management Search WORLD',
+      type:         'search',
+      parameters: {
+        q:            '#masterdatamanagement OR "master data management" OR "customer 360"' 
+      }
+    },
+    {
+      id:           'InfoshareUK',
+      name:         'InfoshareUK',
+      type:         'timeline',
+      parameters: {
+        screen_name: 'InfoshareUK', 
+      }
+    },
+    {
+      id:           'CivicaMDM',
+      name:         'CivicaMDM',
+      type:         'timeline',
+      parameters: {
+        screen_name: 'CivicaMDM', 
+      }
     }
-        
   ],
   top_list_limit: 20
 }
