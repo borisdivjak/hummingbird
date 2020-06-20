@@ -10,6 +10,15 @@ var hummmconfig = {
       }
     },
     {
+      id:           'sdmelb',
+      name:         'Service design Melbourne',
+      type:         'search',
+      parameters: {
+        q:            '#servicedesign OR "service design" OR "designing services" OR "designing public services" OR "digital discovery" OR "design research" OR "user research" OR "user centred" OR "human centred" OR "user-centred" OR "human-centred" OR "experience design"', 
+        geocode:      '"-37.79 144.98 200km"'
+      }
+    },
+    {
       id:           '2',
       name:         'Ruby on Rails UK (limited to searching #rubyonrails at the moment)',
       type:         'search',
